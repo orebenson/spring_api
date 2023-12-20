@@ -1,7 +1,9 @@
 package com.example.myapi.user.controller;
 
+import com.example.myapi.jwt.service.TokenService;
 import com.example.myapi.user.model.User;
 import com.example.myapi.user.service.UserService;
+import org.apache.el.parser.Token;
 import org.springframework.http.HttpCookie;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -21,9 +23,11 @@ import java.util.Map;
 public class UserController {
 
     UserService userService;
+    TokenService tokenService;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, TokenService tokenService) {
         this.userService = userService;
+        this.tokenService = tokenService;
     }
 
     @GetMapping(value = {"/"})
@@ -75,8 +79,8 @@ public class UserController {
             return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
         }
 
-        // TODO generate token
-        String USER_TOKEN = "";
+        // generate token from username
+        String USER_TOKEN = tokenService.getToken(user.getUsername());
 
         //Create headers and put JWT in header
         HttpHeaders headers = new HttpHeaders();
