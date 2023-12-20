@@ -1,0 +1,5 @@
+
+Curl commands:
+
+curl -v http://localhost:8080/signup -H "Content-Type: application/json" -d @testuser.json
+curl -v http://localhost:8080/login -H "Content-Type: application/json" -d @testuser.json

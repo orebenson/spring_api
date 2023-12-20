@@ -1,0 +1,11 @@
+
+Spring Boot API using my custom JWT implementation
+
+service
+- check whether user already exists in repo -> return -1
+- create user if not -> return user id
+
+- add password encryption using bcrypt
+- create jwt utility for creation and validation of jwt
+- create jwt utility to handle jwt timeouts and logout
+- create a jwt utility to add a cipher to the token to detect tampering

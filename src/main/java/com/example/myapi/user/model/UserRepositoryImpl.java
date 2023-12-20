@@ -23,7 +23,7 @@ public class UserRepositoryImpl implements UserRepository {
         };
     }
 
-    public int addUser(User user) {
+    public int save(User user) { //check that the user doesnt already exist in the database and return -1 if they do
         String insertSql = "INSERT INTO users (username, password) VALUES (?, ?)";
         String selectSql = "SELECT user_id FROM users WHERE username = ?";
 
@@ -32,5 +32,14 @@ public class UserRepositoryImpl implements UserRepository {
         int id = jdbc.queryForObject(selectSql, Integer.class, user.getUsername());
 
         return id;
+    }
+
+    public boolean existsByUsername(String username) {
+        String sql = "SELECT EXISTS (SELECT 1 FROM users WHERE username = ?)";
+        return Boolean.TRUE.equals(jdbc.queryForObject(sql, Boolean.class, username));
+    }
+    public User findUserByUsername(String username) {
+        String sql = "SELECT username, password FROM users WHERE username = ?";
+        return jdbc.queryForObject(sql, userMapper, username);
     }
 }

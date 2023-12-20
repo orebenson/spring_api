@@ -1,5 +1,7 @@
 package com.example.myapi.user.model;
 
 public interface UserRepository {
-    int addUser(User user);
+    int save(User user); // returns user id
+    boolean existsByUsername(String username);
+    User findUserByUsername(String username);
 }

@@ -12,7 +12,22 @@ public class UserServiceImpl implements UserService {
         this.userRepository = userRepository;
     }
 
-    public int createUser(User user){
-        return userRepository.addUser(user);
+    public boolean checkUserExists(User user){
+        return userRepository.existsByUsername(user.getUsername());
+    }
+
+    public int createUser(User user){ // returns -1 if user already exists else user id
+        if (!userRepository.existsByUsername(user.getUsername())) {
+            return userRepository.save(user);
+        } else {
+            return -1;
+        }
+    }
+    public boolean authenticateUser(User user) { // checks that user exists and that password matches
+        if (userRepository.existsByUsername(user.getUsername())) {
+            User verifyUser = userRepository.findUserByUsername(user.getUsername());
+            return user.getPassword().equals(verifyUser.getPassword());
+        }
+        return false;
     }
 }
