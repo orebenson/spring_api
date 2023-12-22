@@ -1,10 +1,17 @@
+
+src/main/conf/
+todo.txt
+curldata/
+
+
+###########
 :HELP.md
 .gradle
 build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
-src/main/conf/
+
 ### STS ###
 .apt_generated
 .classpath

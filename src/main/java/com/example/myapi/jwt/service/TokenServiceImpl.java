@@ -1,7 +1,10 @@
 package com.example.myapi.jwt.service;
 
 import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.example.myapi.jwt.model.TokenRevokerRepository;
 import com.example.myapi.jwt.util.TokenCipher;
 import com.google.crypto.tink.CleartextKeysetHandle;
@@ -79,13 +82,14 @@ public class TokenServiceImpl implements TokenService {
     - return status
      */
     @Override
-    public Map<String, String> getToken(String username) {
-        Map<String, String> map = new HashMap<>(); // use 'token' and 'fingerprint' keys
+    public Map<String, Object> getToken(String username) {
+        Map<String, Object> map = new HashMap<>(); // use 'token' and 'fingerprint' keys
 
-        if(!Pattern.matches("[a-zA-Z0-9]{1,10}", username)){
+        if (!Pattern.matches("[a-zA-Z0-9]{1,10}", username)) {
             map.put("token", "-");
             map.put("fingerprint", "-");
             map.put("status", "Invalid input");
+            map.put("statusCode", -1);
             return map;
         }
 
@@ -123,19 +127,71 @@ public class TokenServiceImpl implements TokenService {
             String cipheredToken = this.tokenCipher.cipherToken(token, this.keyCiphering);
             map.put("token", cipheredToken);
             map.put("status", "Successful generation");
+            map.put("statusCode", 1);
             return map;
 
         } catch (Exception e) {
             map.put("token", "-");
             map.put("fingerprint", "-");
             map.put("status", "Error during generation");
+            map.put("statusCode", -1);
             return map;
         }
     }
 
+    /*
+    Validate a token, checking that the fingerprint matches the fingerprint in the token
+    - return the context (user) associated with the token
+    - return a status message
+     */
     @Override
-    public String validateToken(String token) {
-        return null;
+    public Map<String, Object> validateToken(String cipheredToken, String userFingerprint) {
+        Map<String, Object> map = new HashMap<>();
+
+//        // check if the token has been revoked already
+//        if(this.tokenRevokerRepository.isTokenRevoked(cipheredToken)){
+//            map.put("status", "Token revoked");
+//            map.put("statusCode", -1);
+//            return map;
+//        }
+
+        // check fingerprint pattern to avoid bad input
+        if (!Pattern.matches("[A-Z0-9]{100}", userFingerprint)) {
+            map.put("status", "Invalid fingerprint");
+            map.put("statusCode", -1);
+            return map;
+        }
+        try {
+            // compute sha256 hash of fingerprint to compare
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] userFingerprintDigest = digest.digest(userFingerprint.getBytes(StandardCharsets.UTF_8));
+            String userFingerprintHash = DatatypeConverter.printHexBinary(userFingerprintDigest);
+
+            // create context to verify token with
+            JWTVerifier verifier = JWT.require(Algorithm.HMAC256(this.keyHMAC))
+                    .withIssuer(this.issuerID)
+                    .withClaim("userFingerprint", userFingerprintHash)
+                    .build();
+
+            // decipher and verify token
+            String token = this.tokenCipher.decipherToken(cipheredToken, this.keyCiphering);
+            DecodedJWT decodedToken = verifier.verify(token);
+            String username = decodedToken.getSubject();
+
+            // return verified user
+            map.put("username", username);
+            map.put("status", "Verification success");
+            map.put("statusCode", 1);
+            return map;
+        } catch (JWTVerificationException e) {
+            map.put("status", "Invalid token");
+            map.put("statusCode", -1);
+            return map;
+        } catch (Exception e) {
+            map.put("status", "Token validation error");
+            map.put("statusCode", -1);
+            return map;
+        }
     }
 
     @Override

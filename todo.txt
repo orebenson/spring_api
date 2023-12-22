@@ -1,9 +1,0 @@
-
-Spring Boot API using my custom JWT implementation
-
-
-- add password encryption using bcrypt
-
-- how to handle refreshing the jwt?
-- create jwt utility for creation and validation of jwt
-- create jwt utility to handle logout

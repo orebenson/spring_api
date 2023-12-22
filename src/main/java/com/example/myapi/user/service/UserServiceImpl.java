@@ -12,8 +12,8 @@ public class UserServiceImpl implements UserService {
         this.userRepository = userRepository;
     }
 
-    public boolean checkUserExists(User user){
-        return userRepository.existsByUsername(user.getUsername());
+    public boolean checkUserExists(String username){
+        return userRepository.existsByUsername(username);
     }
 
     public int createUser(User user){ // returns -1 if user already exists else user id
