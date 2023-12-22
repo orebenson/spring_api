@@ -11,7 +11,7 @@ public class TokenCipher {
     /*
     Ciphering using AES-GCM
     Cipher and decipher token using google tink library for best practises
-    Aead hides all ciphering logic for security
+    AEAD primitive (Authenticated Encryption with Associated Data) provides functionality of symmetric authenticated encryption
      */
     public TokenCipher() throws Exception {
         AeadConfig.register(); // registers key manager in 'Registry', a global storage of key managers

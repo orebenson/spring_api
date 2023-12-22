@@ -80,12 +80,18 @@ public class UserController {
         }
 
         // generate token from username
-        String USER_TOKEN = tokenService.getToken(user.getUsername());
+        Map<String, String> tokenMap = tokenService.getToken(user.getUsername());
+        String token = tokenMap.get("token");
+        String userFingerprint = tokenMap.get("fingerprint");
+        System.out.println(tokenMap.get("status"));
 
         //Create headers and put JWT in header
         HttpHeaders headers = new HttpHeaders();
-        HttpCookie cookie = new HttpCookie("token", USER_TOKEN);
+        HttpCookie cookie = new HttpCookie("token", token);
         headers.add("Set-Cookie", cookie.toString());
+        // put secure cookie in header, using samesite and httponly
+        String fingerprintCookie = "__Secure-Fgp=" + userFingerprint + "; SameSite=Strict; HttpOnly; Secure";
+        headers.add("Set-Cookie", fingerprintCookie);
 
         body.put("success", "you are logged in");
         return new ResponseEntity<>(body, headers, HttpStatus.OK);

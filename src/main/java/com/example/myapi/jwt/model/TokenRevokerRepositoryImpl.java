@@ -1,4 +1,7 @@
 package com.example.myapi.jwt.model;
 
-public class TokenRevokerRepositoryImpl {
+import org.springframework.stereotype.Repository;
+
+@Repository
+public class TokenRevokerRepositoryImpl implements TokenRevokerRepository {
 }
