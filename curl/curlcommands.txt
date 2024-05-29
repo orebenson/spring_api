@@ -1,8 +1,0 @@
-
-Curl commands:
-
-curl -v http://localhost:8080/signup -H "Content-Type: application/json" -d @testuser.json
-curl -v http://localhost:8080/login -H "Content-Type: application/json" -d @testuser.json
-curl -v http://localhost:8080/profile \
-  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
-  -H "Cookie: __Secure-Fgp=YOUR_FINGERPRINT_COOKIE"
